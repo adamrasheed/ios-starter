@@ -1,0 +1,190 @@
+name: Build & Test (manual)
+
+# NOT automatic by default. This is the expensive half of CI and runs only when asked.
+#
+# HOW TO RUN IT
+#   Actions tab → "Build & Test (manual)" → Run workflow
+#   or:  gh workflow run build-test.yml
+#   or:  git push origin HEAD:ci/pre-ship   (then delete the branch)
+#
+# The `ci/**` push trigger is not redundant. GitHub only registers a workflow_dispatch
+# workflow once the file exists on the DEFAULT branch. If you ever freeze your default
+# branch — e.g. pinning `main` to the shipped App Store binary and developing on `v2` —
+# the dispatch button silently disappears from both the Actions tab and the API, and the
+# dispatches endpoint returns 404. The push trigger keeps this runnable regardless.
+#
+# COST. On a PUBLIC repo, GitHub Actions minutes are free and you can safely switch this
+# to run on every PR (see below). On a PRIVATE repo, macOS bills at 10x. A measured cold
+# run of a comparable app: 4.8 minutes wall clock, ~50 billed minutes. Against a Free
+# allowance of 2000 minutes/month (= 200 macOS minutes) that is about four runs a month.
+# That is the entire reason this is manual and lint.yml is not.
+#
+# TO RUN IT ON EVERY PR, add:
+#   pull_request:
+#     branches: [main]
+# Time goes almost entirely to `Build & test`; dependency resolution is seconds, which is
+# why SPM caching is not set up here — it could only ever target the small half.
+on:
+  workflow_dispatch:
+    inputs:
+      destination:
+        description: "xcodebuild -destination. Blank = auto-select the newest available iOS simulator."
+        required: false
+        default: ""
+  push:
+    branches: ['ci/**']
+
+concurrency:
+  group: build-test-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  build-and-test:
+    name: Build & Test (iOS Simulator)
+    # Pinned rather than macos-latest, and that is not premature. `macos-latest` lags the
+    # newest image by a release or two, and its bundled iOS runtimes may have no simulator
+    # for current-generation devices at all — so "just use latest for robustness" can CAUSE
+    # the destination failure it looks like it avoids. Revisit when latest advances.
+    runs-on: macos-26
+    # Generous against a ~5 minute expected run, so a hang fails the job rather than burning
+    # the whole month's budget, without tripping on a slow cold runner.
+    timeout-minutes: 30
+
+    env:
+      DERIVED_DATA: ${{ github.workspace }}/.derived
+      # Preferred toolchain. Applied below only if present, so this is a preference and not
+      # a hard requirement — see the warn-and-degrade step.
+      XCODE_APP: /Applications/Xcode_26.5.app
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      # Pin the toolchain when it is there, but degrade to the image default with a loud
+      # warning rather than failing every xcodebuild call on a missing path. Pinning keeps a
+      # runner-image refresh from silently changing what gets compiled; the fallback keeps
+      # the button pressable the day the image moves.
+      - name: Select Xcode
+        run: |
+          if [ -d "$XCODE_APP" ]; then
+            echo "DEVELOPER_DIR=$XCODE_APP/Contents/Developer" >> "$GITHUB_ENV"
+            echo "Using pinned toolchain: $XCODE_APP"
+          else
+            echo "::warning title=Xcode pin is stale::$XCODE_APP is not on this runner image. Falling back to the default Xcode. Update XCODE_APP in .github/workflows/build-test.yml."
+            ls -d /Applications/Xcode*.app || true
+          fi
+
+      # The destination is the most likely thing to break after an image update, so print
+      # what the runner actually has before using it.
+      - name: Show toolchain and available simulators
+        run: |
+          xcodebuild -version
+          xcrun simctl list runtimes
+          xcrun simctl list devices available
+
+      # XcodeGen owns the project: Starter.xcodeproj is gitignored and does not exist in a
+      # fresh clone. Nothing below works without this step.
+      - name: Install XcodeGen
+        run: brew install xcodegen
+
+      - name: Generate Xcode project
+        run: |
+          xcodegen generate
+          test -d Starter.xcodeproj
+
+      - name: Resolve dependencies
+        run: |
+          xcodebuild -resolvePackageDependencies \
+            -project Starter.xcodeproj \
+            -scheme Starter \
+            -derivedDataPath "$DERIVED_DATA"
+
+      # If you pin direct packages with exactVersion, their TRANSITIVE dependencies are still
+      # resolved by those packages' own manifests. This log is how you reconstruct which
+      # versions a given run actually built against.
+      #
+      # Note the path: Xcode writes Package.resolved into the generated project's workspace,
+      # NOT into derivedDataPath/SourcePackages as you might expect. `|| true` so a future
+      # Xcode layout change downgrades this to a missing log line, not a failed run.
+      - name: Report resolved dependency versions
+        run: |
+          cat Starter.xcodeproj/project.xcworkspace/xcshareddata/swiftpm/Package.resolved || true
+
+      # Resolve a concrete simulator instead of hardcoding an OS version. A literal `OS=26.5`
+      # breaks the moment an image refresh drops that exact runtime, and a bare device name
+      # leaves the choice to xcodebuild. Taking the UDID of a real, currently-available device
+      # off the newest installed iOS runtime is unambiguous and survives image updates.
+      - name: Resolve simulator destination
+        id: dest
+        env:
+          # Passed via env rather than inline ${{ }} so the value can never be interpreted
+          # as shell.
+          SUPPLIED: ${{ inputs.destination }}
+        run: |
+          set -euo pipefail
+          if [ -n "$SUPPLIED" ]; then
+            echo "Using supplied destination: $SUPPLIED"
+            echo "value=$SUPPLIED" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+          RESOLVED=$(xcrun simctl list devices available --json | python3 -c '
+          import json, re, sys
+
+          runtimes = json.load(sys.stdin)["devices"]
+          best = None
+          for runtime, devices in runtimes.items():
+              match = re.search(r"iOS-(\d+)-(\d+)", runtime)
+              if not match or not devices:
+                  continue
+              version = (int(match.group(1)), int(match.group(2)))
+              # Prefer a Pro device, else any iPhone.
+              for rank, prefix in enumerate(("iPhone 17 Pro", "iPhone")):
+                  hits = [d for d in devices if d["name"].startswith(prefix)]
+                  if hits:
+                      key = (version, -rank)
+                      if best is None or key > best[0]:
+                          best = (key, hits[0])
+                      break
+          if best is None:
+              sys.exit("No available iOS simulator found on this runner image.")
+          device = best[1]
+          print(device["udid"] + "|" + device["name"])
+          ')
+          UDID="${RESOLVED%%|*}"
+          NAME="${RESOLVED##*|}"
+          echo "Auto-selected simulator: $NAME ($UDID)"
+          echo "value=platform=iOS Simulator,id=$UDID" >> "$GITHUB_OUTPUT"
+
+      # NO code-signing flags, deliberately, and this is not an oversight.
+      #
+      # Simulator builds sign ad-hoc as "Sign to Run Locally": no certificate, no team, no
+      # provisioning profile, and entitlements such as iCloud / CloudKit / aps-environment do
+      # not break it. Passing CODE_SIGNING_ALLOWED=NO strips the app's _CodeSignature and the
+      # test host then crashes on launch before the harness ever connects, surfacing as the
+      # deeply unhelpful "Early unexpected exit... test runner crashed before establishing
+      # connection". Verified both ways. Do not add signing flags here.
+      - name: Build & test
+        run: |
+          set -o pipefail
+          xcodebuild test \
+            -project Starter.xcodeproj \
+            -scheme Starter \
+            -destination "${{ steps.dest.outputs.value }}" \
+            -derivedDataPath "$DERIVED_DATA" \
+            -resultBundlePath "$DERIVED_DATA/Starter.xcresult"
+
+      # Any StoreKit test that needs a live SKTestSession will skip here: SKTestSession cannot
+      # activate under headless CLI xcodebuild (SKInternalErrorDomain Code=3). An .xctestplan
+      # does NOT fix this — the blocker is the session, not the config path. Skips do not
+      # affect xcodebuild's exit status, so the step above still fails on real failures.
+      - name: Upload test results
+        if: ${{ !cancelled() }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: xcresult
+          path: ${{ env.DERIVED_DATA }}/Starter.xcresult
+          retention-days: 7
+          if-no-files-found: warn

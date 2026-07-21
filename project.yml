@@ -1,0 +1,118 @@
+# XcodeGen spec — generates Starter.xcodeproj from this file.
+#
+#   brew install xcodegen        # one-time
+#   xcodegen generate            # after ANY change here
+#   open Starter.xcodeproj
+#
+# The .xcodeproj is gitignored. THIS FILE IS THE SOURCE OF TRUTH. Never hand-edit
+# the generated project: your change will vanish on the next generate.
+#
+# Why this matters beyond tidiness: because `sources:` below are folder globs, adding
+# a Swift file never touches a shared project file. That is what makes it possible to
+# develop several features concurrently in separate git worktrees and merge them with
+# zero conflicts. A hand-managed .xcodeproj makes that workflow impossible, because
+# every new file mutates the same XML blob.
+
+name: Starter
+
+options:
+  bundleIdPrefix: com.example
+  deploymentTarget:
+    # iOS 17 is the floor for @Observable and the modern SwiftData APIs this kit uses.
+    iOS: "17.0"
+  createIntermediateGroups: true
+
+# ---------------------------------------------------------------------------
+# Dependencies
+# ---------------------------------------------------------------------------
+# This kit ships with ZERO third-party packages on purpose: StoreKit 2, SwiftData
+# and SwiftUI cover the whole surface, and every package you add is a supply-chain
+# and build-time cost you carry forever.
+#
+# When you do add one, pin it with `exactVersion`, NOT `from:`. Reason: Package.resolved
+# is written inside the generated .xcodeproj, which is gitignored, so it is NOT in the
+# repo and there is nowhere clean to commit it. That leaves `from: "1.2.0"` resolving
+# transiently on every fresh clone and every CI run — an upstream release can change
+# what gets built with no commit here, and turn a green build red.
+#
+# Caveat: exactVersion pins DIRECT dependencies only. Transitive ones still resolve via
+# their own manifests, which is why build-test.yml logs the full resolved set.
+#
+# packages:
+#   SomePackage:
+#     url: https://github.com/owner/SomePackage
+#     exactVersion: "1.2.3"
+
+targets:
+  Starter:
+    type: application
+    platform: iOS
+    sources:
+      - path: Starter
+        excludes:
+          # The StoreKit config is a Run/Test-only scheme artifact (see storeKitConfiguration
+          # below). Exclude it from the recursive glob so it is never copied into Copy Bundle
+          # Resources and shipped inside the App Store binary.
+          - "Features/Store/Starter.storekit"
+      # Re-add with no build-phase membership: keeps a project file reference (so the scheme
+      # can point at it and it stays visible in the navigator) without bundling it.
+      - path: Starter/Features/Store/Starter.storekit
+        buildPhase: none
+    settings:
+      base:
+        # ---- REPLACE THESE THREE WHEN YOU START A REAL APP -------------------
+        PRODUCT_BUNDLE_IDENTIFIER: com.example.starter
+        # Your Apple Developer team id. Leave blank to build for the simulator only;
+        # you need it before you can run on a device or archive.
+        DEVELOPMENT_TEAM: ""
+        MARKETING_VERSION: "0.1"
+        # ---------------------------------------------------------------------
+        CURRENT_PROJECT_VERSION: "1"
+        TARGETED_DEVICE_FAMILY: "1"          # iPhone. Add ",2" for iPad.
+        CODE_SIGN_STYLE: Automatic
+        GENERATE_INFOPLIST_FILE: YES
+        ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME: AccentColor
+        # No non-exempt crypto → skips the export-compliance prompt on every upload.
+        # If you add your own encryption beyond HTTPS, this must change.
+        INFOPLIST_KEY_ITSAppUsesNonExemptEncryption: NO
+        INFOPLIST_KEY_UIApplicationSceneManifest_Generation: YES
+        INFOPLIST_KEY_UILaunchScreen_Generation: YES
+        SWIFT_VERSION: "5.0"
+        # Surface data races as warnings without failing the build. Swift 6 language
+        # mode is the destination; this is the on-ramp. Clear these warnings as you go,
+        # then flip SWIFT_VERSION to "6.0".
+        SWIFT_STRICT_CONCURRENCY: targeted
+    dependencies: []
+      # - package: SomePackage
+
+  StarterTests:
+    type: bundle.unit-test
+    platform: iOS
+    sources:
+      - StarterTests
+      # Bundled into the TEST target rather than the app: StarterTests never ships to the
+      # App Store, and SKTestSession locates the config through a bundle lookup, so GUI
+      # purchase/restore tests still find it here while the app binary stays clean.
+      - path: Starter/Features/Store/Starter.storekit
+        buildPhase: resources
+    dependencies:
+      - target: Starter
+    settings:
+      base:
+        GENERATE_INFOPLIST_FILE: YES
+
+schemes:
+  Starter:
+    build:
+      targets:
+        Starter: all
+        StarterTests: [test]
+    run:
+      # Local StoreKit simulation for Run/Test only. This lives in the .xcscheme, NOT in the
+      # app binary or Info.plist, so it can never affect an App Store build. It lets the real
+      # StoreKitEntitlementProvider be exercised in the simulator (buy / restore / refund)
+      # with no sandbox Apple ID and no sign-in prompt at launch.
+      storeKitConfiguration: Starter/Features/Store/Starter.storekit
+    test:
+      targets:
+        - StarterTests

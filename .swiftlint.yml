@@ -1,0 +1,50 @@
+# SwiftLint config.
+#
+# Tuned so a fresh clone passes `--strict` with zero source changes. Verified against
+# SwiftLint 0.65.0 on Starter/ and StarterTests/.
+#
+# Paths are passed explicitly on the command line (`swiftlint lint Starter StarterTests`)
+# rather than via `included:`, because `included:` resolves relative to the config file's
+# directory and is easy to get silently wrong.
+#
+# Keep this config and `--strict` together. --strict promotes warnings to errors, which is
+# only safe because the config is tuned to the tree. Loosen a rule here with a one-line
+# reason rather than sprinkling `// swiftlint:disable` through the source.
+
+disabled_rules:
+  # docs/ and code TODOs track outstanding work. A TODO is not a CI failure.
+  - todo
+
+  # Trailing commas in multiline literals are deliberate: they keep a diff to one line
+  # when an entry is added to a list.
+  - trailing_comma
+
+identifier_name:
+  # Relaxed to 1 so short domain names (math, DSP, geometry) do not need to be padded out.
+  # If your app has no such vocabulary, raise this back to the default of 3.
+  min_length:
+    warning: 1
+    error: 1
+  max_length:
+    warning: 50
+    error: 60
+
+line_length:
+  warning: 140
+  error: 200
+  ignores_comments: true
+  ignores_urls: true
+
+type_body_length:
+  warning: 300
+  error: 450
+
+file_length:
+  warning: 500
+  error: 800
+  ignore_comment_only_lines: true
+
+# SwiftUI view bodies legitimately nest deeply.
+function_body_length:
+  warning: 80
+  error: 150

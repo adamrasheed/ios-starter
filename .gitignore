@@ -1,0 +1,35 @@
+# Xcode / Swift
+build/
+DerivedData/
+.derived/
+*.moved-aside
+*.pbxuser
+*.mode1v3
+*.mode2v3
+*.perspectivev3
+*.xcuserstate
+*.xcscmblueprint
+*.xccheckout
+xcuserdata/
+
+# XcodeGen owns the project — project.yml is the source of truth, the .xcodeproj is generated.
+*.xcodeproj/
+
+# Swift Package Manager
+.build/
+Packages/
+.swiftpm/
+
+# Generated marketing captures
+docs/screenshots/marketing/
+
+# macOS
+.DS_Store
+
+# Secrets — never commit signing or API material
+*.p12
+*.mobileprovision
+*.cer
+AuthKey_*.p8
+.env
+.env.*
