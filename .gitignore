@@ -12,7 +12,7 @@ DerivedData/
 *.xccheckout
 xcuserdata/
 
-# XcodeGen owns the project — project.yml is the source of truth, the .xcodeproj is generated.
+# XcodeGen owns the project: project.yml is the source of truth, the .xcodeproj is generated.
 *.xcodeproj/
 
 # Swift Package Manager
@@ -26,7 +26,7 @@ docs/screenshots/marketing/
 # macOS
 .DS_Store
 
-# Secrets — never commit signing or API material
+# Secrets: never commit signing or API material
 *.p12
 *.mobileprovision
 *.cer

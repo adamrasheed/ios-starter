@@ -9,7 +9,7 @@ name: Build & Test (manual)
 #
 # The `ci/**` push trigger is not redundant. GitHub only registers a workflow_dispatch
 # workflow once the file exists on the DEFAULT branch. If you ever freeze your default
-# branch — e.g. pinning `main` to the shipped App Store binary and developing on `v2` —
+# branch (e.g. pinning `main` to the shipped App Store binary and developing on `v2`),
 # the dispatch button silently disappears from both the Actions tab and the API, and the
 # dispatches endpoint returns 404. The push trigger keeps this runnable regardless.
 #
@@ -23,7 +23,7 @@ name: Build & Test (manual)
 #   pull_request:
 #     branches: [main]
 # Time goes almost entirely to `Build & test`; dependency resolution is seconds, which is
-# why SPM caching is not set up here — it could only ever target the small half.
+# why SPM caching is not set up here: it could only ever target the small half.
 on:
   workflow_dispatch:
     inputs:
@@ -46,7 +46,7 @@ jobs:
     name: Build & Test (iOS Simulator)
     # Pinned rather than macos-latest, and that is not premature. `macos-latest` lags the
     # newest image by a release or two, and its bundled iOS runtimes may have no simulator
-    # for current-generation devices at all — so "just use latest for robustness" can CAUSE
+    # for current-generation devices at all, so "just use latest for robustness" can CAUSE
     # the destination failure it looks like it avoids. Revisit when latest advances.
     runs-on: macos-26
     # Generous against a ~5 minute expected run, so a hang fails the job rather than burning
@@ -56,7 +56,7 @@ jobs:
     env:
       DERIVED_DATA: ${{ github.workspace }}/.derived
       # Preferred toolchain. Applied below only if present, so this is a preference and not
-      # a hard requirement — see the warn-and-degrade step.
+      # a hard requirement. See the warn-and-degrade step.
       XCODE_APP: /Applications/Xcode_26.5.app
 
     steps:
@@ -178,7 +178,7 @@ jobs:
 
       # Any StoreKit test that needs a live SKTestSession will skip here: SKTestSession cannot
       # activate under headless CLI xcodebuild (SKInternalErrorDomain Code=3). An .xctestplan
-      # does NOT fix this — the blocker is the session, not the config path. Skips do not
+      # does NOT fix this: the blocker is the session, not the config path. Skips do not
       # affect xcodebuild's exit status, so the step above still fails on real failures.
       - name: Upload test results
         if: ${{ !cancelled() }}

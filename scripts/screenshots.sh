@@ -10,7 +10,7 @@
 # itself via the DEMO_* environment variables (see Starter/Support/DemoMode.swift): seeded
 # in-memory data, mocked Pro state, onboarding skipped.
 #
-# Note SIMCTL_CHILD_ — that prefix is what forwards a variable to the LAUNCHED APP rather than
+# Note SIMCTL_CHILD_: that prefix is what forwards a variable to the LAUNCHED APP rather than
 # to simctl itself. Without it the app sees nothing and every screenshot is of the empty state.
 set -euo pipefail
 cd "$(dirname "$0")/.."
@@ -61,7 +61,7 @@ shot 02-home-pro       home     1
 shot 03-settings-free  settings 0
 shot 04-settings-pro   settings 1
 
-echo "done — $OUT"
+echo "done: $OUT"
 echo
 echo "These are raw device captures. To frame them with marketing copy for App Store Connect,"
 echo "run the appstore-listing skill, which composes them into finished 6.9-inch screenshots."

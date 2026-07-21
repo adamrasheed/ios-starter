@@ -1,7 +1,7 @@
 import SwiftData
 import SwiftUI
 
-/// EXAMPLE SCREEN — replace with your app's actual first tab.
+/// EXAMPLE SCREEN. Replace with your app's actual first tab.
 ///
 /// It is here to show four things wired together correctly, which is faster to adapt than to
 /// assemble from scratch: a SwiftData list that goes through `ItemStore` rather than touching

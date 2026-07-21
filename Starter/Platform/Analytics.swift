@@ -57,7 +57,7 @@ enum AnalyticsEvent {
 /// Default implementation: writes to the unified log and goes nowhere else.
 ///
 /// Shipping with this is a perfectly reasonable choice for v1. Analytics you never read is
-/// worse than none — it costs a dependency, a privacy-manifest entry, and an App Store
+/// worse than none: it costs a dependency, a privacy-manifest entry, and an App Store
 /// tracking disclosure in exchange for numbers nobody looks at.
 struct ConsoleAnalyticsClient: AnalyticsClient {
     func track(_ event: AnalyticsEvent) {

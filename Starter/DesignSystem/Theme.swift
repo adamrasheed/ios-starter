@@ -15,17 +15,17 @@ import SwiftUI
 /// A 4pt scale. Named rather than numeric so intent survives a redesign: `Spacing.l` still
 /// means "generous" after you change what generous is worth.
 enum Spacing {
-    /// 4pt — hairline separation inside a control.
+    /// 4pt: hairline separation inside a control.
     static let xs: CGFloat = 4
-    /// 8pt — between tightly related elements.
+    /// 8pt: between tightly related elements.
     static let s: CGFloat = 8
-    /// 12pt — default gap inside a group.
+    /// 12pt: default gap inside a group.
     static let m: CGFloat = 12
-    /// 16pt — standard screen edge inset.
+    /// 16pt: standard screen edge inset.
     static let l: CGFloat = 16
-    /// 24pt — between distinct sections.
+    /// 24pt: between distinct sections.
     static let xl: CGFloat = 24
-    /// 32pt — around a screen's hero element.
+    /// 32pt: around a screen's hero element.
     static let xxl: CGFloat = 32
 }
 
@@ -43,13 +43,13 @@ enum Radius {
 ///
 /// These deliberately resolve to SYSTEM colours rather than hex literals. System colours adapt
 /// to light and dark mode, to increased-contrast and reduced-transparency accessibility
-/// settings, and to whatever Apple changes next — all for free. Hardcoding `Color(hex: "#1C1C1E")`
+/// settings, and to whatever Apple changes next, all for free. Hardcoding `Color(hex: "#1C1C1E")`
 /// buys you a dark mode that is subtly wrong the first time a user turns on Increase Contrast.
 ///
 /// Override individual roles with an asset-catalog colour set when the brand genuinely needs it,
 /// and change them HERE so every screen moves together.
 extension ShapeStyle where Self == Color {
-    /// The brand colour. Backed by the `AccentColor` asset — edit it there, once.
+    /// The brand colour. Backed by the `AccentColor` asset. Edit it there, once.
     static var brand: Color { Color.accentColor }
 
     /// Primary reading text.
@@ -77,7 +77,7 @@ extension ShapeStyle where Self == Color {
 ///
 /// Every one is built from a Dynamic Type text style, so the whole app scales when a user
 /// raises their text size. Using `.system(size: 17)` instead freezes your app at one size and
-/// makes it unusable for anyone who needs larger text — which is a large minority of people,
+/// makes it unusable for anyone who needs larger text. That is a large minority of people,
 /// and an App Store review risk on top of that.
 enum AppFont {
     /// Screen hero. One per screen at most.

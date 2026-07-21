@@ -9,7 +9,7 @@ Logic lives in plain Swift types with no framework imports. SwiftUI views, Swift
 StoreKit calls form a thin shell around that core.
 
 ```
-Core/          pure logic and models — no SwiftUI, no UIKit
+Core/          pure logic and models: no SwiftUI, no UIKit
 DesignSystem/  tokens and shared components
 Platform/      wrappers over system services (analytics, logging, haptics, errors)
 Features/      one folder per feature; the SwiftUI layer
@@ -26,7 +26,7 @@ already been built on top of.
 
 The corollary is a discipline: when a rule is hard to test, the usual cause is that it is tangled
 with a framework type. Extract the decision, pass it plain values, test it, and let the shell do
-the plumbing. `StoreKitEntitlementProvider.isProEntitled` is the worked example — only StoreKit can
+the plumbing. `StoreKitEntitlementProvider.isProEntitled` is the worked example: only StoreKit can
 mint a `Transaction`, so the rule takes a small local struct instead and becomes testable.
 
 ## State and injection
@@ -39,7 +39,7 @@ does two jobs: it makes it impossible for two screens to disagree about entitlem
 means swapping any dependency for a mock is a one-line edit in one file.
 
 This is deliberately the least machinery that works. Reach for something heavier when you can name
-the specific problem it solves for you — not before.
+the specific problem it solves for you, not before.
 
 ## The paid boundary
 
@@ -48,8 +48,8 @@ the specific problem it solves for you — not before.
 
 The sequencing this enables is the real value. You can build, demo and test every paid feature
 against the mock while App Store Connect product setup, the Paid Applications Agreement and banking
-details are still pending — none of which are fast, and all of which are outside your control. When
-the real product exists, the integration is one line in `RootView.init`.
+details are still pending. None of that is fast, and all of it is outside your control. When the
+real product exists, the integration is one line in `RootView.init`.
 
 Three properties of the StoreKit implementation are worth preserving verbatim if you rewrite it:
 
@@ -59,7 +59,7 @@ Three properties of the StoreKit implementation are worth preserving verbatim if
   microseconds and is correct by construction, including for Family Sharing and purchases made on
   other devices.
 - **A `Transaction.updates` listener starts at `init`.** Transactions arrive outside your purchase
-  call — Ask-to-Buy approvals, refunds, other devices. Starting the listener at construction means
+  call: Ask-to-Buy approvals, refunds, other devices. Starting the listener at construction means
   one posted while the app was still launching is not dropped.
 - **`restore()` distinguishes a cancelled auth prompt from a real failure.** Swallowing both means
   an offline owner is told "no purchase found", which tells a paying customer they never paid.
@@ -72,8 +72,8 @@ A view calls `store.add(...)`. A view does not touch `ModelContext`. SwiftData m
 option very easy, which is precisely the trap: it puts rules like "renumber the remaining items
 after a delete" somewhere only a UI test can reach.
 
-Models are written CloudKit-compatible from day one — every property has a default value, and there
-are no unique constraints — even though sync is off. Both are hard requirements for CloudKit
+Models are written CloudKit-compatible from day one (every property has a default value, and there
+are no unique constraints) even though sync is off. Both are hard requirements for CloudKit
 mirroring, and adding a default to a shipped model means a migration rather than an edit. This
 costs nothing now and buys the option later.
 
@@ -87,7 +87,7 @@ One `ErrorPresenter` in the environment, one alert installed at the root.
 Without it, error handling reliably decays into a mixture of `try?` (silent failure, the worst
 outcome, because the user believes it worked), bespoke `@State var errorMessage` per view, and the
 occasional `fatalError` that ships. `errors.attempt { }` is as short as `try?` at the call site, so
-the honest option is also the convenient one — which is the only way a convention survives contact
+the honest option is also the convenient one, which is the only way a convention survives contact
 with a deadline.
 
 `CancellationError` is swallowed on purpose: a task cancelled because the user navigated away is
@@ -101,13 +101,13 @@ in views.
 Colours resolve to **system** colours rather than hex literals. System colours adapt to light and
 dark mode, to Increase Contrast and Reduce Transparency, and to whatever Apple changes next, for
 free. A hardcoded `#1C1C1E` gives you a dark mode that is subtly wrong the first time a user turns
-on an accessibility setting — and you will never see it, because you don't have it on.
+on an accessibility setting, and you will never see it, because you don't have it on.
 
 Fonts are built from Dynamic Type styles for the same reason: `.system(size: 17)` freezes the app
 at one size and makes it unusable for the substantial number of people who raise their text size.
 
 The components cover empty, loading and error states. They exist because these are what apps
-forget, and because the empty state is the first thing a brand-new user sees — an empty list that
+forget, and because the empty state is the first thing a brand-new user sees: an empty list that
 renders as a blank screen reads as a bug at exactly the moment you can least afford it.
 
 ## CI

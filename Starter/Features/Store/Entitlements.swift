@@ -3,7 +3,7 @@ import Foundation
 /// The paid-tier contract. Everything paid gates against `Entitlements.isPro`.
 ///
 /// The actual "is this user Pro?" logic lives behind this protocol so the app can be built
-/// and tested against `MockEntitlementProvider` long before any payment code exists — and so
+/// and tested against `MockEntitlementProvider` long before any payment code exists, and so
 /// the swap to the real thing is a single line in `RootView`. That sequencing matters more
 /// than it looks: it lets you finish and demo every paid feature while App Store Connect
 /// product setup, agreements and banking are still pending.

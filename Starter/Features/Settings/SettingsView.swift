@@ -4,7 +4,7 @@ import SwiftUI
 ///
 /// Every shipping app needs these rows, and two of them are App Store review requirements
 /// rather than nice-to-haves: **Restore Purchases** (mandatory for non-consumables) and a
-/// reachable **Privacy Policy** link (mandatory, and it must be a live URL at review time —
+/// reachable **Privacy Policy** link (mandatory, and it must be a live URL at review time:
 /// a 404 here is a routine rejection).
 struct SettingsView: View {
     @Environment(Entitlements.self) private var entitlements

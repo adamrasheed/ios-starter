@@ -1,13 +1,13 @@
 import Foundation
 import SwiftData
 
-/// EXAMPLE STORE — delete alongside `ExampleItem`.
+/// EXAMPLE STORE. Delete alongside `ExampleItem`.
 ///
 /// The pattern is the point, and it is the single biggest lever on how testable an app is:
 /// **mutation logic lives here, not in views.**
 ///
 /// SwiftData makes it very easy to call `modelContext.insert(...)` directly from a button
-/// action. That works, and it makes the rule untestable — verifying "deleting an item
+/// action. That works, and it makes the rule untestable: verifying "deleting an item
 /// renumbers the rest correctly" then requires launching a UI test, which is slow, flaky, and
 /// something you will quietly stop running. With the logic here, the same check is a
 /// millisecond-fast unit test against an in-memory `ModelContext` (see `ItemStoreTests`).

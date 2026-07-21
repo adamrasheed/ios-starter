@@ -4,7 +4,7 @@ import Foundation
 ///
 /// Marketing captures are where most indie apps lose time and quality. Doing it by hand means
 /// booting a simulator, tapping to the right screen, faking a purchase to see the Pro state,
-/// and hoping the data looks good — then repeating all of it for every device size, and again
+/// and hoping the data looks good, then repeating all of it for every device size, and again
 /// for every release when a string changes.
 ///
 /// Instead the app can pose ITSELF: `scripts/screenshots.sh` launches the binary with these

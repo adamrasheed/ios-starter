@@ -3,7 +3,7 @@ import SwiftUI
 /// First-run onboarding.
 ///
 /// Keep it SHORT. Every screen between the user and the thing they downloaded your app for is
-/// a place they abandon, and onboarding is not where people learn an app — using it is. Three
+/// a place they abandon, and onboarding is not where people learn an app. Using it is. Three
 /// pages is a reasonable ceiling; one is often better.
 ///
 /// Two rules encoded here worth keeping:

@@ -30,13 +30,13 @@ enum StoreError: LocalizedError {
 ///
 /// `isPro` is derived purely from `Transaction.currentEntitlements`, which is StoreKit's own
 /// source of truth. It already reflects restored purchases, Family Sharing, and purchases made
-/// on the user's other devices, so there is no receipt to parse and — importantly — no local
+/// on the user's other devices, so there is no receipt to parse and (importantly) no local
 /// "hasPurchased" flag to keep in sync. A local flag is the classic bug in this layer: it drifts
 /// from reality on refund, reinstall and device switch, and every attempt to patch it adds
 /// another way to be wrong.
 ///
 /// A long-lived listener on `Transaction.updates` finishes transactions that arrive outside a
-/// direct `purchase()` call — Ask-to-Buy approvals, purchases on another device, refunds — and
+/// direct `purchase()` call (Ask-to-Buy approvals, purchases on another device, refunds) and
 /// republishes freshly derived state on `isProUpdates`. Starting it at `init` (per Apple's
 /// guidance) means a transaction posted while the app was still launching is never dropped.
 ///
@@ -112,7 +112,7 @@ actor StoreKitEntitlementProvider: EntitlementProvider {
         // The error handling here is deliberate and worth preserving: a user CANCELLING the
         // auth prompt must not block re-deriving from local entitlements, but a real failure
         // (offline, store down) MUST surface. Swallowing both means an owner with no cached
-        // entitlement sees "no purchase found" — telling a paying customer they never paid —
+        // entitlement sees "no purchase found" (telling a paying customer they never paid)
         // when the truth is "couldn't reach the store".
         do {
             try await AppStore.sync()
@@ -168,7 +168,7 @@ extension StoreKitEntitlementProvider {
     /// Pure decision: does any current entitlement unlock Pro?
     ///
     /// Pro requires an entitlement for exactly this product that has NOT been revoked. The
-    /// revocation check is what handles refunds — without it a refunded user keeps the feature.
+    /// revocation check is what handles refunds. Without it a refunded user keeps the feature.
     static func isProEntitled(productID: String, entitlements: [Entitlement]) -> Bool {
         entitlements.contains { $0.productID == productID && $0.revocationDate == nil }
     }

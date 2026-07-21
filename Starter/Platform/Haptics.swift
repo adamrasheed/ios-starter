@@ -19,7 +19,7 @@ enum Haptics {
         generator.notificationOccurred(.success)
     }
 
-    /// A task failed. Pair with a visible message — never let a buzz be the only error report,
+    /// A task failed. Pair with a visible message. Never let a buzz be the only error report,
     /// because a user with haptics disabled then gets no feedback at all.
     static func failure() {
         let generator = UINotificationFeedbackGenerator()

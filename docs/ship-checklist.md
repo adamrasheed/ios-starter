@@ -20,7 +20,7 @@ items below, and most of them can only be checked by hand.
 ### The things Apple rejects for
 
 - [ ] **Restore Purchases is visible and works.** Mandatory for non-consumables and a routine
-      rejection. It is in Settings and on the paywall by default — confirm neither got removed
+      rejection. It is in Settings and on the paywall by default. Confirm neither got removed
 - [ ] **Privacy policy URL is live.** Must return a real page at review time. A 404 is a rejection
 - [ ] **Support URL is live**
 - [ ] Privacy nutrition labels filled in App Store Connect, and honest about what the app collects
@@ -30,7 +30,7 @@ items below, and most of them can only be checked by hand.
 - [ ] Any permission prompt has a usage string that says *why*, in user language. "This app needs
       camera access" is a rejection; "Scan a receipt to add it to your log" is not
 
-### Purchases — device pass required
+### Purchases: device pass required
 
 The simulator's local `.storekit` file is a simulation. It does not exercise Apple's real
 purchase flow, and the failures it hides are the expensive ones.

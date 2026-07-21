@@ -15,7 +15,7 @@ enum AppInfo {
         Bundle.main.infoDictionary?["CFBundleVersion"] as? String ?? "0"
     }
 
-    /// "1.2 (14)" — what to show in Settings and paste into a bug report.
+    /// "1.2 (14)": what to show in Settings and paste into a bug report.
     static var displayVersion: String { "\(version) (\(build))" }
 
     static var bundleID: String {

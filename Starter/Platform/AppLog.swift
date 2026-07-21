@@ -8,7 +8,7 @@ import OSLog
 /// about privacy at every interpolation.
 ///
 /// That last point matters more than it sounds. String interpolation in a Logger call is
-/// REDACTED by default in release builds — you get `<private>` unless you explicitly write
+/// REDACTED by default in release builds: you get `<private>` unless you explicitly write
 /// `privacy: .public`. That default is what keeps a user's email out of a log a support
 /// engineer might read. Mark values `.public` only when they cannot identify a person.
 enum AppLog {

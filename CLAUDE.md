@@ -25,7 +25,7 @@ should be treated that way when scoping._
 ## Hard rules
 
 **XcodeGen owns the project.** `project.yml` is the source of truth. The `.xcodeproj` is
-generated and gitignored. Never hand-edit it — the change vanishes on the next `xcodegen
+generated and gitignored. Never hand-edit it: the change vanishes on the next `xcodegen
 generate`, usually a day later, in a way that is confusing to diagnose. After changing
 `project.yml`, run `xcodegen generate`.
 
@@ -83,7 +83,7 @@ three; use them rather than inventing per-screen variants.
 
 Swift Testing (`@Test`, `@Suite`, `#expect`), not XCTest.
 
-Test pure logic and store types. Do not write tests that need a running simulator UI — they are
+Test pure logic and store types. Do not write tests that need a running simulator UI. They are
 slow and flaky, and a suite that is slow stops being run. If something is only verifiable by hand
 (audio, camera, a live purchase, iCloud sync), say so explicitly in the docs rather than writing a
 test that appears to cover it.
@@ -102,8 +102,8 @@ These were paid for once. Do not re-derive them.
   An `.xctestplan` does not fix it. Test the pure entitlement decision in CI and exercise real
   purchase flows in the Xcode GUI or on a device.
 - **`Package.resolved` lives in `<App>.xcodeproj/project.xcworkspace/xcshareddata/swiftpm/`**, not
-  in `derivedDataPath/SourcePackages/`. Since the `.xcodeproj` is gitignored, it is not in the repo
-  — which is exactly why dependencies are pinned with `exactVersion` in `project.yml`.
+  in `derivedDataPath/SourcePackages/`. Since the `.xcodeproj` is gitignored, it is not in the
+  repo, which is exactly why dependencies are pinned with `exactVersion` in `project.yml`.
 - **`workflow_dispatch` only registers on the repository's default branch.** If you ever freeze
   `main` and develop elsewhere, the Run workflow button silently disappears and the API 404s.
   `build-test.yml` also triggers on pushing a `ci/**` branch for that reason.

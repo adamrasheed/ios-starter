@@ -18,7 +18,7 @@ import UIKit
 /// something went wrong. Call `recordMilestone()` on success paths only.
 ///
 /// Backed by `UserDefaults` directly rather than `@AppStorage`. `@AppStorage` is a
-/// `DynamicProperty` — it only republishes inside a SwiftUI `View`, so in a plain class it
+/// `DynamicProperty`: it only republishes inside a SwiftUI `View`, so in a plain class it
 /// compiles, appears to work, and quietly fails to drive updates.
 @MainActor
 @Observable
@@ -67,7 +67,7 @@ final class ReviewPrompt {
         }
     }
 
-    /// Call when the user successfully completes the app's core action — the thing they
+    /// Call when the user successfully completes the app's core action, the thing they
     /// downloaded it for. Not on launch, and never on an error path.
     func recordMilestone() {
         milestoneCount += 1

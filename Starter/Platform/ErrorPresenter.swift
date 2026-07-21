@@ -2,7 +2,7 @@ import SwiftUI
 
 /// One way to show the user that something failed.
 ///
-/// Without a shared presenter, error handling decays into a mix of `try?` (silent failure —
+/// Without a shared presenter, error handling decays into a mix of `try?` (silent failure:
 /// the worst outcome, because the user thinks it worked), bespoke `@State var errorMessage`
 /// in every view, and the occasional `fatalError` that ships. This gives every screen the
 /// same one-liner and makes silence a deliberate choice rather than the path of least

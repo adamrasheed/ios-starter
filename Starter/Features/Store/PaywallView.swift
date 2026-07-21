@@ -67,8 +67,8 @@ struct PaywallView: View {
                 }
             }
             .task { await loadProduct() }
-            // If Pro arrives while this is open — restored elsewhere, Ask-to-Buy approved,
-            // bought on another device — there is nothing left to sell. Get out of the way.
+            // If Pro arrives while this is open (restored elsewhere, Ask-to-Buy approved,
+            // bought on another device), there is nothing left to sell. Get out of the way.
             .onChange(of: entitlements.isPro) { _, isPro in
                 if isPro { dismiss() }
             }
@@ -158,7 +158,7 @@ struct PaywallView: View {
                 loadState = .loaded
             } else {
                 // Almost always a product-id mismatch between StoreProduct.pro, the .storekit
-                // file, and App Store Connect — or a product still in "Waiting for Review".
+                // file, and App Store Connect, or a product still in "Waiting for Review".
                 AppLog.store.error("No product returned for \(StoreProduct.pro, privacy: .public)")
                 loadState = .failed
             }

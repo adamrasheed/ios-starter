@@ -8,7 +8,7 @@ struct StarterApp: App {
     /// Built here rather than with the `.modelContainer(for:)` convenience so the failure path
     /// is explicit. The convenience form crashes the app on any container error, which in
     /// practice means a user with a corrupt store or a mismatched iCloud entitlement gets an
-    /// app that cannot launch at all — with no way to tell you why.
+    /// app that cannot launch at all, with no way to tell you why.
     let modelContainer: ModelContainer
 
     /// App-wide services, created once and injected.

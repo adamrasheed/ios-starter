@@ -6,7 +6,7 @@
 #
 # Renames the target, folders, scheme, StoreKit config and bundle identifiers, then regenerates
 # the Xcode project. Run it once, immediately after generating from the template, before you
-# write any code — it is a global find-and-replace, and it is far less pleasant once you have
+# write any code. It is a global find-and-replace, and it is far less pleasant once you have
 # your own files using the word "Starter".
 #
 # It refuses to run twice, and it refuses to run on a dirty tree, so a bad invocation is always
@@ -102,14 +102,14 @@ cat <<NEXT
 Done. ${NEW_NAME}.xcodeproj is ready.
 
 Still to do by hand, in rough order:
-  1. project.yml       — MARKETING_VERSION, and DEVELOPMENT_TEAM if you skipped it
-  2. Assets.xcassets   — AccentColor (your brand colour) and a 1024pt AppIcon
-  3. SettingsView      — the privacy and support URLs. Both must be LIVE before review
-  4. PaywallView       — the perks list, in the user's words
-  5. OnboardingView    — your three pages, or delete it and ship without onboarding
+  1. project.yml:      MARKETING_VERSION, and DEVELOPMENT_TEAM if you skipped it
+  2. Assets.xcassets:  AccentColor (your brand colour) and a 1024pt AppIcon
+  3. SettingsView:     the privacy and support URLs. Both must be LIVE before review
+  4. PaywallView:      the perks list, in the user's words
+  5. OnboardingView:   your three pages, or delete it and ship without onboarding
   6. Delete the example domain: ${NEW_NAME}/Core/ExampleItem.swift, ItemStore.swift,
      Features/Home/, and ${NEW_NAME}Tests/ItemStoreTests.swift
-  7. CLAUDE.md         — fill in the app-specific sections at the top
+  7. CLAUDE.md:        fill in the app-specific sections at the top
 
 Then:  xcodegen generate && open ${NEW_NAME}.xcodeproj
 NEXT

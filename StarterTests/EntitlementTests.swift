@@ -5,7 +5,7 @@ import Testing
 ///
 /// Note what makes these possible: `isProEntitled` takes a plain array of a small local struct
 /// rather than reading `Transaction.currentEntitlements` itself. Only StoreKit can mint a real
-/// `Transaction`, so a rule written directly against that type cannot be tested at all — you
+/// `Transaction`, so a rule written directly against that type cannot be tested at all. You
 /// would be left verifying your billing logic by hand, in a simulator, on the day you ship.
 ///
 /// The general lesson, and the one worth carrying into every app: when a decision depends on a

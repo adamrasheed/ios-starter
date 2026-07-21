@@ -1,4 +1,4 @@
-# XcodeGen spec — generates Starter.xcodeproj from this file.
+# XcodeGen spec: generates Starter.xcodeproj from this file.
 #
 #   brew install xcodegen        # one-time
 #   xcodegen generate            # after ANY change here
@@ -32,7 +32,7 @@ options:
 # When you do add one, pin it with `exactVersion`, NOT `from:`. Reason: Package.resolved
 # is written inside the generated .xcodeproj, which is gitignored, so it is NOT in the
 # repo and there is nowhere clean to commit it. That leaves `from: "1.2.0"` resolving
-# transiently on every fresh clone and every CI run — an upstream release can change
+# transiently on every fresh clone and every CI run: an upstream release can change
 # what gets built with no commit here, and turn a green build red.
 #
 # Caveat: exactVersion pins DIRECT dependencies only. Transitive ones still resolve via

@@ -1,14 +1,14 @@
 import Foundation
 import SwiftData
 
-/// EXAMPLE MODEL — delete this and `ItemStore` once you have a real domain.
+/// EXAMPLE MODEL. Delete this and `ItemStore` once you have a real domain.
 ///
 /// It exists to demonstrate two constraints that are cheap to honour now and expensive to
 /// retrofit once you have users with data on disk:
 ///
 /// 1. **Every stored property has a default value, and there is no `@Attribute(.unique)`.**
 ///    Both are hard requirements for CloudKit mirroring. If you ever want SwiftData to sync
-///    across a user's devices, a model that violates these will fail at container creation —
+///    across a user's devices, a model that violates these will fail at container creation,
 ///    and adding defaults later means a migration, not an edit.
 ///
 /// 2. **A canonical value, derived everywhere else.** `createdAt` is stored once; anything
