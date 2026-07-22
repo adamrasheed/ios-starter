@@ -33,7 +33,8 @@ struct OnboardingView: View {
              message: "One sentence on the core action, so the first tap is obvious."),
         Page(icon: "checkmark.seal",
              title: "You're set",
-             message: "Get out of the way and let them start."),
+             message: "One closing line, then the button hands them the app. No tutorial, no "
+                + "sell: the last page's whole job is to get out of the way."),
     ]
 
     var body: some View {
