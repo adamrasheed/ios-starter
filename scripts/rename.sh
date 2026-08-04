@@ -83,10 +83,13 @@ done
 if [ -n "$NEW_TEAM" ]; then
   sed -i '' -e "s|DEVELOPMENT_TEAM: \"\"|DEVELOPMENT_TEAM: ${NEW_TEAM}|" project.yml
   sed -i '' -e "s|\"_developerTeamID\" : \"\"|\"_developerTeamID\" : \"${NEW_TEAM}\"|" "$NEW_NAME/Features/Store/${NEW_NAME}.storekit"
+  # Handled separately from the content pass above: that pass globs source and docs extensions,
+  # and .plist is not one of them.
+  sed -i '' -e "s|REPLACE_WITH_TEAM_ID|${NEW_TEAM}|" docs/ExportOptions.plist
   echo "  set DEVELOPMENT_TEAM=$NEW_TEAM"
 else
   echo "  note: no team id given. Simulator builds work; device builds and archives will not"
-  echo "        until you set DEVELOPMENT_TEAM in project.yml."
+  echo "        until you set DEVELOPMENT_TEAM in project.yml and docs/ExportOptions.plist."
 fi
 
 # This script renames itself out of relevance, so remove it rather than leave a loaded gun

@@ -90,6 +90,18 @@ test that appears to cover it.
 
 SwiftData tests use an in-memory `ModelContainer` per test. See `StarterTests/ItemStoreTests.swift`.
 
+Two `#expect` gotchas, both paid for more than once:
+
+- The macro's comment argument is a `Comment`, not a `String`. `"a" + "b"` does not compile there.
+  Build the message into a `let` first and interpolate it as `"\(message)"`. See
+  `StarterTests/PaywallCopyTests.swift` for the pattern.
+- The macro re-emits its argument in a **non-throwing** context. Hoist any `try` call, and any
+  `rethrows` call like `allSatisfy`, into a `let` before the `#expect`.
+
+If the app's value is a computation (a solver, a scorer, a grader), test its output against a
+result derived **independently of the code that produces it**, not just against itself. A wrong
+answer from a self-consistent calculator never crashes; it just ships.
+
 ## Things that will waste your time if you rediscover them
 
 These were paid for once. Do not re-derive them.

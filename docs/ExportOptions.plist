@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<!--
+  Export options for `xcodebuild -exportArchive`. See docs/releasing.md.
+
+  teamID:      REPLACE with your Apple Developer team id (the same value as
+               DEVELOPMENT_TEAM in project.yml).
+  destination: "export" writes an IPA to -exportPath so you can inspect or verify the
+               signature. Change to "upload" to push straight to App Store Connect.
+-->
+<plist version="1.0">
+<dict>
+  <key>method</key><string>app-store-connect</string>
+  <key>teamID</key><string>REPLACE_WITH_TEAM_ID</string>
+  <key>signingStyle</key><string>automatic</string>
+  <key>uploadSymbols</key><true/>
+  <key>destination</key><string>export</string>
+</dict>
+</plist>

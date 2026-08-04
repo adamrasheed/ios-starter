@@ -26,26 +26,8 @@ struct PaywallView: View {
 
     private enum LoadState { case loading, loaded, failed }
 
-    struct Perk: Identifiable {
-        let id = UUID()
-        let icon: String
-        let title: String
-        let detail: String
-    }
-
-    /// REPLACE with what your Pro tier actually unlocks. Write benefits, not features: what the
-    /// user can now do, in their words.
-    private let perks: [Perk] = [
-        Perk(icon: "wand.and.stars",
-             title: "Everything unlocked",
-             detail: "Full access to every feature, forever."),
-        Perk(icon: "icloud",
-             title: "On all your devices",
-             detail: "One purchase covers every device on your Apple ID."),
-        Perk(icon: "heart",
-             title: "Support development",
-             detail: "A one-time purchase from an independent developer."),
-    ]
+    /// All copy lives in `PaywallCopy` so it can be tested. Edit it there, not here.
+    private var perks: [PaywallCopy.Perk] { PaywallCopy.perks }
 
     var body: some View {
         NavigationStack {
@@ -63,7 +45,7 @@ struct PaywallView: View {
             .navigationTitle("")
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) {
-                    Button("Close") { dismiss() }
+                    Button(PaywallCopy.closeTitle) { dismiss() }
                 }
             }
             .task { await loadProduct() }
@@ -72,10 +54,10 @@ struct PaywallView: View {
             .onChange(of: entitlements.isPro) { _, isPro in
                 if isPro { dismiss() }
             }
-            .alert("Something went wrong",
+            .alert(PaywallCopy.errorTitle,
                    isPresented: Binding(get: { errorMessage != nil },
                                         set: { if !$0 { errorMessage = nil } })) {
-                Button("OK", role: .cancel) { errorMessage = nil }
+                Button(PaywallCopy.errorDismissTitle, role: .cancel) { errorMessage = nil }
             } message: {
                 Text(errorMessage ?? "")
             }
@@ -89,9 +71,9 @@ struct PaywallView: View {
             Image(systemName: "sparkles")
                 .font(.system(size: 44, weight: .semibold))
                 .foregroundStyle(.brand)
-            Text("\(AppInfo.displayName) Pro")
+            Text(PaywallCopy.headline)
                 .font(AppFont.display)
-            Text("A one-time unlock. No subscription.")
+            Text(PaywallCopy.subhead)
                 .font(AppFont.caption)
                 .foregroundStyle(.textSecondary)
         }
@@ -129,13 +111,13 @@ struct PaywallView: View {
                 if isRestoring {
                     ProgressView()
                 } else {
-                    Text("Restore Purchases")
+                    Text(PaywallCopy.restoreTitle)
                 }
             }
             .disabled(isPurchasing || isRestoring)
 
             if loadState == .failed {
-                Text("Pricing couldn't be loaded right now. You can still restore a previous purchase.")
+                Text(PaywallCopy.priceUnavailable)
                     .font(AppFont.footnote)
                     .foregroundStyle(.textSecondary)
                     .multilineTextAlignment(.center)
@@ -144,8 +126,8 @@ struct PaywallView: View {
     }
 
     private var buyButtonTitle: String {
-        if let product { return "Unlock for \(product.displayPrice)" }
-        return "Unlock Pro"
+        if let product { return PaywallCopy.buyTitle(price: product.displayPrice) }
+        return PaywallCopy.buyFallbackTitle
     }
 
     // MARK: - Actions
@@ -195,7 +177,7 @@ struct PaywallView: View {
                     Haptics.success()
                     dismiss()
                 } else {
-                    errorMessage = "No previous purchase was found for your Apple ID."
+                    errorMessage = PaywallCopy.restoreFoundNothing
                 }
             } catch {
                 errorMessage = (error as? LocalizedError)?.errorDescription ?? error.localizedDescription
