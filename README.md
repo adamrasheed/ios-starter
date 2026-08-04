@@ -59,6 +59,7 @@ StarterTests/            Swift Testing suites
 docs/architecture.md     How it fits together, and why
 docs/adr/decision-log.md The decisions, with the reasoning that produced them
 docs/ship-checklist.md   Everything between "it works" and "it's on the App Store"
+docs/releasing.md        Archiving, signing, and which App Store image goes in which slot
 ```
 
 ## The three rules worth keeping
@@ -77,9 +78,10 @@ exists in App Store Connect, and it is why the entitlement rules are unit-tested
 
 ## Before you ship
 
-Read `docs/ship-checklist.md`. The short version: restore button, live privacy URL, real product
-id in three places, and a device pass on a real StoreKit sandbox account. A green CI build proves
-none of those.
+Read `docs/ship-checklist.md`. The short version: launch it on an erased simulator and walk first
+run, confirm the paywall sells only what the binary actually does, restore button, privacy URL
+verified in a real browser, real product id in three places, and a device pass on a StoreKit
+sandbox account. A green CI build proves none of those, and it does not prove the app starts.
 
 ## Licence
 
