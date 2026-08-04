@@ -95,14 +95,30 @@ struct PaywallProductConfigurationTests {
 /// the same commit that ships the feature, never before.
 @Suite("Paywall copy")
 struct PaywallCopyTests {
+    /// Every user-facing string on the paywall. Add to this when you add copy, or the rules below
+    /// silently stop covering it.
+    ///
+    /// `buyTitle(price:)` is sampled with a placeholder rather than a real price, so the
+    /// hardcoded-price rule tests the template around the price and not the price itself.
     private var allCopy: [String] {
         [PaywallCopy.headline,
          PaywallCopy.subhead,
+         PaywallCopy.buyTitle(price: "<price>"),
          PaywallCopy.buyFallbackTitle,
          PaywallCopy.restoreTitle,
          PaywallCopy.priceUnavailable,
-         PaywallCopy.restoreFoundNothing]
+         PaywallCopy.restoreFoundNothing,
+         PaywallCopy.closeTitle,
+         PaywallCopy.errorTitle,
+         PaywallCopy.errorDismissTitle]
             + PaywallCopy.perks.flatMap { [$0.title, $0.detail] }
+    }
+
+    /// The buy title must actually show the price it was handed. A template that drops it leaves
+    /// the button reading "Unlock for" with no number, which no test would otherwise catch.
+    @Test("The buy title includes the price it is given")
+    func buyTitleIncludesPrice() {
+        #expect(PaywallCopy.buyTitle(price: "$4.99").contains("$4.99"))
     }
 
     @Test("Every perk has an icon, a title and a detail")
@@ -137,10 +153,13 @@ struct PaywallCopyTests {
     /// `Product.displayPrice` at runtime.
     @Test("No copy hardcodes a price")
     func noHardcodedPrice() {
-        let priceMarkers = ["$", "€", "£", "¥", "USD"]
+        // Compared case-insensitively: the symbols have no case, but the currency codes do, and
+        // "usd" is as much a hardcoded marker as "USD".
+        let priceMarkers = ["$", "€", "£", "¥", "usd", "eur", "gbp"]
         for text in allCopy {
+            let lowercased = text.lowercased()
             for marker in priceMarkers {
-                #expect(text.contains(marker) == false,
+                #expect(lowercased.contains(marker) == false,
                         "\"\(text)\" contains \(marker); the price must come from StoreKit.")
             }
         }

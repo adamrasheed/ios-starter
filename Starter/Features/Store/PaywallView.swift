@@ -45,7 +45,7 @@ struct PaywallView: View {
             .navigationTitle("")
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) {
-                    Button("Close") { dismiss() }
+                    Button(PaywallCopy.closeTitle) { dismiss() }
                 }
             }
             .task { await loadProduct() }
@@ -54,10 +54,10 @@ struct PaywallView: View {
             .onChange(of: entitlements.isPro) { _, isPro in
                 if isPro { dismiss() }
             }
-            .alert("Something went wrong",
+            .alert(PaywallCopy.errorTitle,
                    isPresented: Binding(get: { errorMessage != nil },
                                         set: { if !$0 { errorMessage = nil } })) {
-                Button("OK", role: .cancel) { errorMessage = nil }
+                Button(PaywallCopy.errorDismissTitle, role: .cancel) { errorMessage = nil }
             } message: {
                 Text(errorMessage ?? "")
             }
@@ -126,7 +126,7 @@ struct PaywallView: View {
     }
 
     private var buyButtonTitle: String {
-        if let product { return "Unlock for \(product.displayPrice)" }
+        if let product { return PaywallCopy.buyTitle(price: product.displayPrice) }
         return PaywallCopy.buyFallbackTitle
     }
 

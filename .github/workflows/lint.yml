@@ -48,13 +48,19 @@ jobs:
       # em dashes into in-app strings and into a published support page, each needing its own
       # cleanup commit during the week of submission.
       #
-      # Scoped to Swift sources and the App Store metadata package. Docs and code comments are
-      # not user-facing and are not checked.
+      # Scoped to Swift sources and the App Store metadata package. Markdown docs are not scanned.
+      #
+      # Within a Swift file this matches every em dash, in code comments as well as in string
+      # literals. That is deliberate rather than a limitation: grep cannot reliably tell a
+      # user-facing literal from a comment, and the house style covers both. If you genuinely
+      # need one in a comment, rewrite the sentence.
       - name: No em dashes in user-facing text
         run: |
           hits=$(grep -rn '—' --include='*.swift' Starter StarterTests || true)
           if [ -d appstore/metadata ]; then
-            hits="${hits}$(grep -rn '—' appstore/metadata || true)"
+            # Newline-separated, so the last Swift hit and the first metadata hit do not run
+            # together into one unreadable line.
+            hits="${hits}"$'\n'"$(grep -rn '—' appstore/metadata || true)"
           fi
           if [ -n "$(printf '%s' "$hits" | tr -d '[:space:]')" ]; then
             echo "Em dashes found. Rewrite the sentence, or use a period, comma, colon or parentheses."

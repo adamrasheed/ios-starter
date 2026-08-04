@@ -39,9 +39,18 @@ enum PaywallCopy {
     static let headline = "\(AppInfo.displayName) Pro"
     static let subhead = "A one-time unlock. No subscription."
 
-    /// Shown when StoreKit has not returned a price yet. The real button title always comes from
-    /// `Product.displayPrice`.
+    /// The buy button once StoreKit has returned a price.
+    ///
+    /// Takes the price rather than embedding one: prices differ by storefront and change with tax
+    /// rules, so the only correct source is `Product.displayPrice` at runtime.
+    static func buyTitle(price: String) -> String { "Unlock for \(price)" }
+
+    /// Shown when StoreKit has not returned a price yet.
     static let buyFallbackTitle = "Unlock Pro"
+
+    static let closeTitle = "Close"
+    static let errorTitle = "Something went wrong"
+    static let errorDismissTitle = "OK"
 
     /// Apple requires a restore path for a non-consumable, and reviewers look for this exact
     /// wording. Renaming it to something clever is a routine rejection.

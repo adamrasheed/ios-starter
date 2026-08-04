@@ -30,12 +30,18 @@ cloud-managed one on first use. A cloud-managed certificate **does not appear in
 succeed. Do not go hunting for a certificate to create.
 
 **The archive signs with Apple Development.** Expected, and not worth debugging: the export step
-re-signs with Apple Distribution. Verify on the exported IPA rather than guessing:
+re-signs with Apple Distribution. Verify on the exported IPA rather than guessing. `Payload/` lives
+*inside* the IPA, so it has to be unpacked first:
 
 ```sh
-codesign -dvvv Payload/Starter.app 2>&1 | grep Authority
+unzip -q /tmp/Starter-export/Starter.ipa -d /tmp/Starter-ipa
+codesign -dvvv /tmp/Starter-ipa/Payload/Starter.app 2>&1 | grep Authority
 # Authority=Apple Distribution: <Your Org> (<TEAMID>)
 ```
+
+This only works with `<destination>export</destination>`. With `upload` there is no local IPA to
+inspect, which is a reason to export and verify once on a first release before switching to
+uploading directly.
 
 ## Version numbers
 
